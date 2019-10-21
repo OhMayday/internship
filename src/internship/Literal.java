@@ -1,3 +1,4 @@
+package internship;
 public class Literal extends Expression {
 
     Integer value;
@@ -7,8 +8,18 @@ public class Literal extends Expression {
         this.value = value;
     }
 
+    public Literal(String token)
+    {
+        this.value = Integer.parseInt(token);
+    }
+
     public String toString() 
     {
         return this.value.toString();
+    }
+
+    public static boolean isLiteral(String term)
+    {
+        return term.matches("^[0-9]+$");
     }
 }
