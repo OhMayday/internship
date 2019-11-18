@@ -8,4 +8,9 @@ public class Expression {
     {
         return "";
     }
+
+    public String getEquation()
+    {
+        return "";
+    }
 }

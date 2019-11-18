@@ -1,4 +1,5 @@
 package internship;
+import java.util.*;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.Stack;
@@ -10,59 +11,13 @@ public class ConsoleTest {
         System.out.print(exp);
     }
 
-    public static void main2(String []args) {
-        System.out.println("Hello World");
-        ConsoleTest console = new ConsoleTest();
-
-        Literal l5 = new Literal(5);
-        Literal l3 = new Literal(3);
-        Operator plus = new Operator("+");
-
-        console.printExpression(l5);
-        console.printExpression(plus);
-        console.printExpression(l3);
-
-        System.out.println("");
-    }
-
-	public static void main3(String[] args) {
-		Scanner scan = new Scanner(System.in);
-		System.out.println("Enter in the equation for which you want the derivative (Make sure there are spaces between operators!)");
-		String P = scan.nextLine();
-		System.out.println(P);
-		
-        String[] tokens = P.split(" ");
-        for(int i = 0; i < tokens.length; ++i)
-        {
-		    System.out.println(tokens[i]);
-            Expression e;
-            if(Literal.isLiteral(tokens[i]))
-                e = new Literal(tokens[i]);
-		        //System.out.println("  is literal");
-        }
-	}
-
-    public static boolean isLiteral(String token)
-    {
-        return Literal.isLiteral(token);
-    }
-
-    public static boolean isOp(String token)
-    {
-        return token.equals("^") || 
-               token.equals("+") || 
-               token.equals("-") ||
-               token.equals("*") ||
-               token.equals("/");
-    }
-
 	public static void main(String[] args) {
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Enter in the equation for which you want the derivative (Make sure there are spaces between operators!)");
 		String P = scan.nextLine();
 		System.out.println(P);
 		
-        LinkedList output = new LinkedList();
+        ArrayList<Expression> output = new ArrayList<Expression>();
         Stack ops = new Stack();
         String[] tokens = P.split(" ");
         int i = 0;
@@ -70,16 +25,12 @@ public class ConsoleTest {
         {
             String token = tokens[i];
             ++i;
-            System.out.print("Token = ");
-            if(isLiteral(token))
+            if(Literal.isLiteral(token))
             {
-                System.out.println("  Literal");
                 output.add(new Literal(token));
             }
-            else if(isOp(token))
+            else if(Operator.isOperator(token))
             {
-                System.out.println("  Op");
-
                 Operator curr = new Operator(token);
                 while(!ops.empty())
                 {
@@ -98,25 +49,35 @@ public class ConsoleTest {
                 }
                 ops.push(curr);
             }
-            else
-                System.out.println("  Other");
         }
         while(!ops.empty())
         {
             Operator op = (Operator) ops.pop();
             output.add(op);
         }
+        Collections.reverse(output);
 
-        
+        /*
         System.out.println("Outputs:");
         for(Object obj : output) {
             Expression exp = (Expression)obj;
             System.out.println("  "+exp.toString());
         }
-        System.out.println("Operators:");
-        while(!ops.empty()) {
-            Expression exp = (Expression)ops.pop();
-            System.out.println("  "+exp.toString());
+        */
+
+        Expression exp = output.get(0);
+        output.remove(0);
+        if(!(exp instanceof Operator))
+            throw new RuntimeException("Found unexpected Expression type "+exp.toString());
+        Operator op = (Operator)exp;
+        op.getOperands(output);
+
+        if(!output.isEmpty())
+        {
+            System.out.println("ERROR: Unbalanced equation");
+            return;
         }
+
+        System.out.println(op.getEquation());
     }
 }
